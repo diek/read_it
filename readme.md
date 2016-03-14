@@ -1,4 +1,4 @@
-# ${1:read_it}
+# Django Project: read_it
 
 TODO: Write a project description
 
@@ -15,7 +15,8 @@ TODO: Write usage instructions
 
 TODO: Write history
 
-## Credits: Nicole Harris
+## Credits: 
+Nicole Harris
 
 
 ## License: None
