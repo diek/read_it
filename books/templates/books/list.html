@@ -1,25 +1,10 @@
+{% extends "base.html" %}
 {% load humanize %}
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Home</title>
-</head>
-<body>
-    {% if request.user.is_authenticated %}
-        <p>{{request.user.username}}, you last logged on at {{request.user.last_login}}</p>
-    {% else %}
-        <p>Welcome guest</p>
-    {% endif %}
-    <div>
-        <h2>{{ books.count|apnumber|title }} book{{books.count|pluralize}}</h2>
-        {% for book in books %}
-            <h2>{{book.title }} by {{book.list_authors }}</h2>
-            {% if book.is_favourite %}
-                <span class="highlight">favourite</span>
-            {% endif %}
-            {{ book.review }}
-        {% endfor %}
-    </div>
-</body>
-</html>
+
+{% block content %}
+	<h1>{{ books.count|apnumber|title }} book{{ books.count|pluralize }}</h1>
+
+	{% for book in books %}
+		{% include "books/book-detail.html" %}
+	{% endfor %}
+{% endblock %}
