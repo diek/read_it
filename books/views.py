@@ -1,7 +1,7 @@
 from django.db.models import Count
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic import DetailView, View
-from .forms import ReviewForm
+from .forms import BookForm, ReviewForm
 from .models import Author, Book
 
 
@@ -49,17 +49,35 @@ class AuthorDetail(DetailView):
 
 
 # Paste into Views.py - don't forget to import get_object_or_404!
-def review_books(request):
+# A class based view => Mapping a model to a form
+class ReviewList(View):
     """
     List all of the books that we want to review.
     """
-    books = Book.objects.filter(date_reviewed__isnull=True).prefetch_related('authors')
+    def get(self, request):
+        books = Book.objects.filter(date_reviewed__isnull=True).prefetch_related('authors')
 
-    context = {
-        'books': books,
-    }
+        context = {
+            'books': books,
+            'form': BookForm,  # add the view to the context
+        }
 
-    return render(request, "books/list-to-review.html", context)
+        return render(request, "books/list-to-review.html", context)
+
+    def post(self, request):
+        form = BookForm(request.POST)
+        books = Book.objects.filter(date_reviewed__isnull=True).prefetch_related('authors')
+
+        if form.is_valid():
+            form.save()
+            return redirect('review-books')
+
+        context = {
+            'form': form,
+            'books': books,
+        }
+
+        return render(request, "books/list-to-review.html", context)
 
 
 def review_book(request, pk):
@@ -77,7 +95,7 @@ def review_book(request, pk):
             book.review = form.cleaned_data['review']
             book.reviewed_by = request.user
             book.save()
-
+            # pass the name of the url
             return redirect('review-books')
     else:
         form = ReviewForm
